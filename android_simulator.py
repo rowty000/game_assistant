@@ -8,5 +8,5 @@ while True:
     name = input('filename:')
     if name == 'q':
         break
-    d.screenshot('pics/' + name + '.png')
+    d.screenshot(name + '.png')
 # d.click(1250, 765)

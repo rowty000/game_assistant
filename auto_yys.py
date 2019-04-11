@@ -3,16 +3,18 @@
 # @Author : Vanya
 import time
 import random
-import winsound
+import pygame
 from uiautomator import device as d
 from judgement import Judgement
 
 
 random.seed(time.time())
+pygame.mixer.init()
 
 
 def warning():
-    winsound.PlaySound('Ring03_1.wav', flags=1)
+    track = pygame.mixer.Sound('Ring03_1.wav')
+    track.play(loops=-1)
     input('input to stop')
 
 
