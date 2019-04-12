@@ -1,3 +1,6 @@
 uiautomator
 Pillow
 pygame
+opencv-python
+aircv
+opencv-contrib-python < 3.4.2.18
