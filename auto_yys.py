@@ -28,9 +28,9 @@ def click_range(x, y):
 
 
 def wait_for_end():
-    for j in range(60):  # * 3 seconds
+    for j in range(180):  # * 3 seconds
         d.screenshot(pic_name)
-        time.sleep(3)
+        time.sleep(1)
         if judge.is_reward_continue_page(pic_name):
             print('win')
             click_range(1200, 185)
@@ -89,7 +89,8 @@ def auto_challenge(times):
                 warning()
                 return
         except Exception as e:
-            print(traceback.format_stack(e))
+            print(e)
+            print(traceback.format_exc())
             warning()
     warning()
 
@@ -111,7 +112,8 @@ def auto_yuhun(times):
                 warning()
                 return
         except Exception as e:
-            print(traceback.format_stack(e))
+            print(e)
+            print(traceback.format_exc())
             warning()
     warning()
 
@@ -121,20 +123,26 @@ def attack_boss(pos):
     if not wait_for_end():
         warning()
         return
+    time.sleep(2)
     box_time = 0
     while True:
-        time.sleep(2)
         d.screenshot(pic_name)
+        if judge.is_exploration_home_page(pic_name):
+            print('quit to exploration home page')
+            break
         print('find box')
         pos = judge.get_boss_box_pos(pic_name)
         if not pos:
             print('no box', box_time)
             if box_time < 5:
+                time.sleep(1)
                 box_time += 1
                 continue
             break
         print('get box')
         click_range(pos[0], pos[1])
+        time.sleep(1)
+        print('close reward')
         click_range(1200, 175)
     return True
 
@@ -154,8 +162,10 @@ def auto_tansuo(times):
             else:
                 click_range(1066, 604)
                 print('entry')
+                time.sleep(1)
             first_start = False
             move_times = 0
+            retry_times = 0
             while True:
                 d.screenshot(pic_name)
                 print('find boss')
@@ -174,21 +184,44 @@ def auto_tansuo(times):
                 if pos:
                     click_range(pos[0], pos[1])
                     print('challenge in goblin')
+                    time.sleep(1)
+                    d.screenshot(pic_name)
+                    if judge.is_quit_page(pic_name):
+                        retry_times += 1
+                        if retry_times >= 5:
+                            warning()
+                            return
+                        print('challenge in failed retry', retry_times)
+                        continue
+                    time.sleep(5)
+                    d.screenshot(pic_name)
+                    if not judge.is_battle_page(pic_name):
+                        retry_times += 1
+                        if retry_times >= 5:
+                            warning()
+                            return
+                        print('challenge in failed retry', retry_times)
+                        continue
+                    print('challenge in success')
+                    retry_times = 0
                     if not wait_for_end():
                         warning()
                         return
                     count += 1
+                    print('count', count)
                     if count == times:  # finish
                         warning()
                         return
                     continue
                 print('no goblin')
-                if move_times < 3:
-                    print('move right', move_times)
-                    click_range(1300, 570)  # right
-                elif move_times < 6:
-                    print('move left', move_times)
-                    click_range(100, 570)  # left
+                if move_times < 2:
+                    print('go right', move_times)
+                    d.drag(1300, 570, 300, 570, 10)
+                    # click_range(1300, 570)  # right
+                elif move_times < 4:
+                    print('go left', move_times)
+                    d.drag(100, 570, 1100, 570, 10)
+                    # click_range(100, 570)  # left
                 else:
                     print('move back no boss')
                     warning()
@@ -197,7 +230,8 @@ def auto_tansuo(times):
                 time.sleep(3)
 
         except Exception as e:
-            print(traceback.format_stack(e))
+            print(e)
+            print(traceback.format_exc())
             warning()
 
 
@@ -210,7 +244,7 @@ def get_experience_goblin():
         pos = judge.get_experience_pos(pic_name)
         if not pos:
             print('not found')
-            time.sleep(0.5)
+            time.sleep(0.3)
             d.screenshot(pic_name)
             continue
         search_box = (pos[0] - 300, pos[1] - 300, pos[0] + 300, pos[1])
@@ -310,8 +344,11 @@ def auto_tansuo_experience(times):
             else:
                 click_range(1066, 604)
                 print('entry')
+                time.sleep(2)
+                d.drag(1300, 570, 300, 570, 10)
             first_start = False
             move_times = 0
+            retry_times = 0
             while True:
                 d.screenshot(pic_name)
                 print('find boss')
@@ -329,8 +366,28 @@ def auto_tansuo_experience(times):
                 print('no boss, find experience goblin')
                 pos = get_experience_goblin()
                 if pos:
-                    print('challenge in goblin')
                     click_range(pos[0], pos[1])
+                    print('challenge in goblin')
+                    time.sleep(1)
+                    d.screenshot(pic_name)
+                    if judge.is_quit_page(pic_name):
+                        retry_times += 1
+                        if retry_times >= 5:
+                            warning()
+                            return
+                        print('challenge in failed retry', retry_times)
+                        continue
+                    time.sleep(5)
+                    d.screenshot(pic_name)
+                    if not judge.is_battle_page(pic_name):
+                        retry_times += 1
+                        if retry_times >= 5:
+                            warning()
+                            return
+                        print('challenge in failed retry', retry_times)
+                        continue
+                    print('challenge in success')
+                    retry_times = 0
                     if not wait_for_end():
                         warning()
                         return
@@ -341,15 +398,13 @@ def auto_tansuo_experience(times):
                         return
                     continue
                 print('no goblin')
-                if move_times < 3:
+                if move_times < 2:
                     pos_x = get_no_attack_pos_x(1300, 100, 570)
-                    print('move right', move_times, pos_x)
-                    click_range(pos_x, 570)  # right
-                elif move_times < 6:
-                    pos_x = get_no_attack_pos_x(100, 1300, 570)
-                    print('move left', move_times, pos_x)
-                    click_range(pos_x, 570)  # left
+                    print('go right', move_times, pos_x)
+                    d.drag(pos_x, 570, pos_x-1000, 570, 10)
+                    # click_range(pos_x, 570)  # right
                 else:
+                    print('quit exploration after 2 times')
                     if quit_tansuo():
                         break
                     warning()
@@ -358,12 +413,36 @@ def auto_tansuo_experience(times):
                 time.sleep(3)
 
         except Exception as e:
-            print(traceback.format_stack(e))
+            print(e)
+            print(traceback.format_exc())
             warning()
+
+
+def interact():
+    while True:
+        t = input('select what to do:\n1) jiejie\n2) yuhun\n3) tansuo\n4) jingyan\n:')
+        if t in ('1', '2', '3', '4'):
+            break
+    while True:
+        times = input('input times:')
+        try:
+            times = int(times)
+            break
+        except Exception as e:
+            print('input error', e)
+    if t == '1':
+        auto_challenge(times)
+    elif t == '2':
+        auto_yuhun(times)
+    elif t == '3':
+        auto_tansuo(times)
+    elif t == '4':
+        auto_tansuo_experience(times)
 
 
 if __name__ == '__main__':
     # auto_challenge(15)
     # auto_yuhun(15)
-    auto_tansuo(15)
-    # auto_tansuo_experience(20)
+    # auto_tansuo(25)
+    # auto_tansuo_experience(10)
+    interact()

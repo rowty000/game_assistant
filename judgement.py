@@ -4,7 +4,6 @@
 import math
 from PIL import Image, ImageChops
 import aircv as ac
-import cv2
 
 
 class Judgement(object):
@@ -15,7 +14,7 @@ class Judgement(object):
             return True
         else:
             diff_count = math.sqrt(sum([x*2 for x in diff.getdata()]))
-            print(diff_count)
+            # print(diff_count)
             if diff_count < threshold:
                 return True
             # diff.save('diff.png')
@@ -112,10 +111,37 @@ class Judgement(object):
     def get_experience_pos(pic):
         im = ac.imread(pic)
         im2 = ac.imread('standard/experience.png')
-        match_result = ac.find_sift(im, im2)
-        if match_result:
-            if match_result['confidence'][1] > 15:
+        try:
+            match_result = ac.find_sift(im, im2)
+            if match_result and match_result['result'][0] > 0 and match_result['confidence'][1] > 15:
+                    return match_result['result']
+        except Exception as e:
+            print('get_experience_pos exception', e)
+            return
+
+    @staticmethod
+    def get_dharma_pos(pic):
+        im = ac.imread(pic)
+        im2 = ac.imread('standard/dharma.png')
+        try:
+            match_result = ac.find_sift(im, im2)
+            if match_result and match_result['result'][0] > 0 and match_result['confidence'][1] > 15:
                 return match_result['result']
+        except Exception as e:
+            print('get_experience_pos exception', e)
+            return
+
+    @staticmethod
+    def get_money_pos(pic):
+        im = ac.imread(pic)
+        im2 = ac.imread('standard/money.png')
+        try:
+            match_result = ac.find_sift(im, im2)
+            if match_result and match_result['result'][0] > 0 and match_result['confidence'][1] > 10:
+                return match_result['result']
+        except Exception as e:
+            print('get_experience_pos exception', e)
+            return
 
     def is_quit_ok_page(self, pic):
         im = Image.open(pic)
@@ -131,24 +157,40 @@ class Judgement(object):
         im2 = Image.open('standard/quit.png')
         return self.is_same(im, im2, 300)
 
+    def is_battle_page(self, pic):
+        im = Image.open(pic)
+        im = im.convert('L')
+        im = im.crop((25, 20, 60, 55))
+        im2 = Image.open('standard/return.png')
+        return self.is_same(im, im2, 300)
+
+    def is_exploration_home_page(self, pic):
+        im = Image.open(pic)
+        im = im.convert('L')
+        im = im.crop((1270, 140, 1330, 190))
+        im2 = Image.open('standard/exploration_home.png')
+        return self.is_same(im, im2, 300)
+
 
 def just_test():
     # im = Image.open('pics/tansuo1.png')
     # im = im.convert('L')
-    # im1 = im.crop((30, 50, 80, 90))
-    # im1.save('standard/ttt.png')
+    # im1 = im.crop((1190, 445, 1225, 485))
+    # im1.show()
+    # im1.save('standard/money.png')
 
-    # im = ac.imread('pics/tansuo14.png')
-    # im2 = ac.imread('standard/experience.png')
-    # # match_result = ac.find_template(im, im2, 0.95)
-    # match_result = ac.find_sift(im, im2)
-    # print(match_result)
+    im = ac.imread('pics/tansuo9.png')
+    im2 = ac.imread('standard/money.png')
+    # match_result = ac.find_template(im, im2, 0.95)
+    match_result = ac.find_sift(im, im2)
+    print(match_result)
 
-    judge = Judgement()
+    # judge = Judgement()
     # im = judge.get_crop_pic('pics/tansuo14.png', (100, 100, 300, 600))
     # cv2.imshow('tt', im)
     # cv2.waitKey()
-    print(judge.is_quit_ok_page('pics/tansuo15.png'))
+    # print(judge.is_exploration_home_page('pics/tansuo5.png'))
+    # print(judge.is_battle_page('auto_challenge.png'))
     # pos = judge.get_attack_pos('auto_challenge.png')
     # if pos:
     #     print(pos)
