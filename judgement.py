@@ -104,7 +104,25 @@ class Judgement(object):
             if match_result:
                 return match_result['result']
         except Exception as e:
-            print('get_attack_pos exception', e)
+            print('get_attack_boss_pos exception', e)
+            return
+
+    @ staticmethod
+    def is_task_attack(pic, pos):
+        im = ac.imread(pic)
+        x, y = pos
+        x = int(x)
+        y = int(y)
+        offsets = [(3, -40), (47, 1), (4, 44), (-37, 4), (-20, -31), (31, -29), (-20, 31), (34, 29)]
+        positions = [(x+a, y+b) for a, b in offsets]
+        try:
+            for bound_pos in positions:
+                r = im[bound_pos[1], bound_pos[0], 2]
+                g = im[bound_pos[1], bound_pos[0], 1]
+                if r > 200 and g > 200:
+                    return True
+        except Exception as e:
+            print('is_task_attack exception', e)
             return
 
     @staticmethod
@@ -116,7 +134,7 @@ class Judgement(object):
             if match_result:
                 return match_result['result']
         except Exception as e:
-            print('get_attack_pos exception', e)
+            print('get_boss_box_pos exception', e)
             return
 
     @staticmethod
@@ -140,7 +158,7 @@ class Judgement(object):
             if match_result and match_result['result'][0] > 0 and match_result['confidence'][1] > 15:
                 return match_result['result']
         except Exception as e:
-            print('get_experience_pos exception', e)
+            print('get_dharma_pos exception', e)
             return
 
     @staticmethod
@@ -152,7 +170,7 @@ class Judgement(object):
             if match_result and match_result['result'][0] > 0 and match_result['confidence'][1] > 10:
                 return match_result['result']
         except Exception as e:
-            print('get_experience_pos exception', e)
+            print('get_money_pos exception', e)
             return
 
     def is_quit_ok_page(self, pic):
@@ -191,19 +209,20 @@ def just_test():
     # im1.show()
     # im1.save('standard/money.png')
 
-    im = ac.imread('pics/tansuo9.png')
-    im2 = ac.imread('standard/money.png')
-    # match_result = ac.find_template(im, im2, 0.95)
-    match_result = ac.find_sift(im, im2)
-    print(match_result)
+    # im = ac.imread('pics/tansuo22.png')
+    # im2 = ac.imread('standard/attack.png')
+    # match_result = ac.find_all_template(im, im2, 0.95)
+    # match_result = ac.find_sift(im, im2)
+    # print(match_result)
 
-    # judge = Judgement()
+    judge = Judgement()
     # im = judge.get_crop_pic('pics/tansuo14.png', (100, 100, 300, 600))
     # cv2.imshow('tt', im)
     # cv2.waitKey()
     # print(judge.is_exploration_home_page('pics/tansuo5.png'))
     # print(judge.is_battle_page('auto_challenge.png'))
-    # pos = judge.get_attack_pos('auto_challenge.png')
+    # pos = judge.get_attack_pos('pics/tansuo22.png')
+    print(judge.is_task_attack('pics/tansuo22.png', (1270.5, 385.5)))
     # if pos:
     #     print(pos)
 
