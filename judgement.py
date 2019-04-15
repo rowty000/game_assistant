@@ -77,14 +77,18 @@ class Judgement(object):
     def get_attack_pos(pic, all_pos=False, pic_as_img=False):
         im = pic if pic_as_img else ac.imread(pic)
         im2 = ac.imread('standard/attack.png')
-        if all_pos:
-            match_result = ac.find_all_template(im, im2, 0.95, 6)
-            if match_result:
-                return [x['result'] for x in match_result]
-        else:
-            match_result = ac.find_template(im, im2, 0.95)
-            if match_result:
-                return match_result['result']
+        try:
+            if all_pos:
+                match_result = ac.find_all_template(im, im2, 0.95, 6)
+                if match_result:
+                    return [x['result'] for x in match_result]
+            else:
+                match_result = ac.find_template(im, im2, 0.95)
+                if match_result:
+                    return match_result['result']
+        except Exception as e:
+            print('get_attack_pos exception', e)
+            return
 
     @staticmethod
     def get_crop_pic(pic, box):
@@ -95,17 +99,25 @@ class Judgement(object):
     def get_attack_boss_pos(pic):
         im = ac.imread(pic)
         im2 = ac.imread('standard/attack_boss.png')
-        match_result = ac.find_template(im, im2, 0.95)
-        if match_result:
-            return match_result['result']
+        try:
+            match_result = ac.find_template(im, im2, 0.95)
+            if match_result:
+                return match_result['result']
+        except Exception as e:
+            print('get_attack_pos exception', e)
+            return
 
     @staticmethod
     def get_boss_box_pos(pic):
         im = ac.imread(pic)
         im2 = ac.imread('standard/box.png')
-        match_result = ac.find_template(im, im2, 0.95)
-        if match_result:
-            return match_result['result']
+        try:
+            match_result = ac.find_template(im, im2, 0.95)
+            if match_result:
+                return match_result['result']
+        except Exception as e:
+            print('get_attack_pos exception', e)
+            return
 
     @staticmethod
     def get_experience_pos(pic):
