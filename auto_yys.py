@@ -162,7 +162,8 @@ def auto_tansuo(times):
             else:
                 click_range(1066, 604)
                 print('entry')
-                time.sleep(1)
+                time.sleep(2)
+                d.drag(1300, 570, 300, 570, 10)
             first_start = False
             move_times = 0
             retry_times = 0
@@ -214,11 +215,11 @@ def auto_tansuo(times):
                         return
                     continue
                 print('no goblin')
-                if move_times < 2:
+                if move_times < 1:
                     print('go right', move_times)
                     d.drag(1300, 570, 300, 570, 10)
                     # click_range(1300, 570)  # right
-                elif move_times < 4:
+                elif move_times < 3:
                     print('go left', move_times)
                     d.drag(100, 570, 1100, 570, 10)
                     # click_range(100, 570)  # left
@@ -398,7 +399,7 @@ def auto_tansuo_experience(times):
                         return
                     continue
                 print('no goblin')
-                if move_times < 2:
+                if move_times < 1:
                     pos_x = get_no_attack_pos_x(1300, 100, 570)
                     print('go right', move_times, pos_x)
                     d.drag(pos_x, 570, pos_x-1000, 570, 10)
